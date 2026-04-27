@@ -32,8 +32,8 @@ def fetch_repos():
 
 def generate_table(repos):
     """Generate Markdown table for public, non-fork repos."""
-    # Filter: Not private AND Not fork
-    public_repos = [r for r in repos if not r.get("private") and not r.get("fork")]
+    # Filter: Not private AND Not fork AND Not self
+    public_repos = [r for r in repos if not r.get("private") and not r.get("fork") and r.get("name") != REPO]
     
     if not public_repos:
         return "*(No public projects found)*"
