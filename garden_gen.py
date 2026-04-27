@@ -19,7 +19,8 @@ def is_prime(n):
 
 def get_token():
     """Try to get token from ENV first, then Keyring."""
-    token = os.environ.get("GH_Token")
+    # Unified to GH_TOKEN as per GitHub Action env var
+    token = os.environ.get("GH_TOKEN")
     if not token:
         try:
             import keyring

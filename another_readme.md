@@ -20,6 +20,7 @@ For the automated GitHub Action to update your garden daily, you **must** add a 
 1. Go to **Settings** -> **Secrets and variables** -> **Actions**.
 2. Click **New repository secret**.
 3. **Name**: `GH_TOKEN`
+> ✅ **Note**: This variable is already added to GitHub Action Secrets/Environment Variables. No manual setup is required for the automated workflow.
 4. **Value**: Your GitHub Personal Access Token (needs `repo` and `read:user` scope).
 
 *If you don't add the secret, the action will fall back to generating Mock Data just to keep things pretty.*
