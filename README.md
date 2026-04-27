@@ -5,10 +5,10 @@
 > "Every commit is a seed of progress. 🌸"
 
 This visualization maps my GitHub contributions to a digital garden:
-- 🟫 **Mud**: Days without commits.
-- 🌱 **Sprout**: 1 commit.
-- 🌸 **Flower**: 2-4 commits.
-- 🌳 **Tree**: 5+ commits.
+- 🟫 **Mud**: 0 commits.
+- 🌱 **Sprout**: 1 - 31 commits.
+- 🌸 **Flower**: 32 - 127 commits.
+- 🌳 **Tree**: 128+ commits.
 
 **Animation**: ☁️ Cloud patrols and waters your active contributions.
 

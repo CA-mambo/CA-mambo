@@ -127,21 +127,16 @@ def generate_svg(weeks_data, username, is_mock=False):
             icon = ""
             
             if count > 0:
-                # Logic for plants
-                if count == 1:
-                    fill_color = "#238636" # Sprout
+                # Agent Efficiency Logic: High commit counts need higher thresholds
+                if count < 32:
+                    fill_color = "#238636" # Sprout (1-31 commits)
                     icon = "🌱"
-                elif count < 5:
-                    fill_color = "#006d77" # Flowers
+                elif count < 128:
+                    fill_color = "#006d77" # Flowers (32-127 commits) - Extended to cover gap
                     icon = "🌸"
                 else:
-                    fill_color = "#05461f" # Trees
+                    fill_color = "#05461f" # Trees (>= 128 commits)
                     icon = "🌳"
-                
-                # Add center point to animation path
-                cx = x + cell_size / 2
-                cy = y + cell_size / 2
-                path_points.append(f"{cx},{cy}")
             
             # Draw Cell
             svg_parts.append(f'<rect x="{x}" y="{y}" width="{cell_size}" height="{cell_size}" fill="{fill_color}" rx="2" />')
