@@ -5,11 +5,12 @@
 > "Every commit is a seed of progress. 🌸"
 
 This visualization maps my GitHub contributions to a digital garden:
-- 🟫 **Mud**: 0 commits (Dark Brown).
+- 🟫 **Mud**: 0 commits (Brown soil).
 - 🌱 **Sprout**: 1 - 63 commits (Composite numbers).
 - 🌸 **Flower**: 2, 3, 5, 7, 11... (Prime numbers < 64).
 - 🌳 **Tree**: 64+ commits (Agent High Efficiency).
 
+**Style**: Plants have transparent backgrounds and float on the dark mode canvas.
 **Animation**: ☁️ Rain cloud patrols and waters your active contributions.
 
 ---
