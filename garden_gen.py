@@ -4,6 +4,7 @@ import json
 import urllib.request
 import random
 import datetime
+import math
 
 def is_prime(n):
     """Check if a number is prime."""
@@ -96,31 +97,58 @@ def generate_mock_data():
         }
     }
 
-# 🏃♀️ Vector Mambo Template
-# Drawn using pure SVG shapes for 100% compatibility
-MAMBO_SVG_TEMPLATE = '''
-<g transform="translate(0, {y})">
-    <!-- Vector Mambo -->
-    <!-- Ears -->
-    <path d="M 6,12 L 4,5 L 8,12 Z" fill="#8B5A2B" />
-    <path d="M 10,12 L 12,5 L 8,12 Z" fill="#8B5A2B" />
-    <!-- Head -->
-    <circle cx="8" cy="12" r="5" fill="#8B5A2B" />
-    <!-- Face -->
-    <circle cx="8" cy="12" r="4" fill="#FFE4C4" />
-    <!-- Eyes -->
-    <circle cx="6.5" cy="11" r="0.8" fill="#000" />
-    <circle cx="9.5" cy="11" r="0.8" fill="#000" />
-    <!-- Hat -->
-    <ellipse cx="8" cy="7" rx="4" ry="3" fill="#6A5ACD" />
-    <!-- Dress -->
-    <rect x="4" y="17" width="8" height="6" fill="#4169E1" />
+def get_distance(p1, p2):
+    return math.sqrt((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2)
+
+def generate_path(weeks_data, cell_size, gap, header_height, row_height):
+    """
+    Generates a path that visits all non-zero contribution cells.
+    Uses a Nearest Neighbor heuristic.
+    """
+    points = []
+    # 1. Collect all active cell centers
+    for week_index, week in enumerate(weeks_data):
+        x = week_index * (cell_size + gap) + gap
+        days = week['contributionDays']
+        for day_index in range(7):
+            if day_index < len(days):
+                count = days[day_index]['contributionCount']
+                if count > 0:
+                    y = day_index * row_height + gap + header_height
+                    cx = x + cell_size / 2
+                    cy = y + cell_size / 2
+                    points.append((cx, cy))
     
-    <!-- Animation -->
-    <animateMotion path="M {start_x},0 L {end_x},0" dur="40s" repeatCount="indefinite" />
-    <animateTransform attributeName="transform" type="translate" values="0,0; 0,-2; 0,0" dur="0.6s" repeatCount="indefinite" additive="sum" />
-</g>
-'''
+    if not points:
+        return ""
+
+    # 2. Sort points to create a path (Nearest Neighbor)
+    # Start from the first point (top-left most)
+    points.sort(key=lambda p: (p[0], p[1]))
+    path_points = [points[0]]
+    remaining = points[1:]
+    
+    current = path_points[0]
+    while remaining:
+        # Find nearest neighbor
+        next_point = None
+        min_dist = float('inf')
+        for p in remaining:
+            d = get_distance(current, p)
+            if d < min_dist:
+                min_dist = d
+                next_point = p
+        
+        if next_point:
+            path_points.append(next_point)
+            remaining.remove(next_point)
+            current = next_point
+    
+    # 3. Build SVG path string
+    path_d = f"M {path_points[0][0]},{path_points[0][1]}"
+    for p in path_points[1:]:
+        path_d += f" L {p[0]},{p[1]}"
+    return path_d
 
 def generate_svg(weeks_data, username, is_mock=False):
     cell_size = 14
@@ -133,59 +161,53 @@ def generate_svg(weeks_data, username, is_mock=False):
     svg_height = 7 * row_height + gap + header_height
     
     svg_parts = []
-    # 1. SVG Header
     svg_parts.append(f'<svg xmlns="http://www.w3.org/2000/svg" width="{svg_width}" height="{svg_height}">')
-    
-    # Background
     svg_parts.append(f'<rect width="100%" height="100%" fill="#0d1117" rx="4" />')
     
-    # Title
     title_text = "🌱 Mambo's Garden" if not is_mock else "🌱 Mambo's Garden (Demo)"
     svg_parts.append(f'<text x="{svg_width/2}" y="15" text-anchor="middle" fill="#58a6ff" font-size="14" font-family="sans-serif" font-weight="bold">{title_text}</text>')
 
-    # 2. Draw Grid (Plants & Mud)
+    # Draw Grid
     for week_index, week in enumerate(weeks_data):
         x = week_index * (cell_size + gap) + gap
         days = week['contributionDays']
-        
         for day_index in range(7):
+            count = 0
             if day_index < len(days):
                 count = days[day_index]['contributionCount']
-            else:
-                count = 0 
             
             y = day_index * row_height + gap + header_height
             center_x = x + cell_size / 2
             center_y = y + cell_size / 2 + 1
             
             if count == 0:
-                # Draw Mud Emoji
-                svg_parts.append(f'<text x="{center_x}" y="{center_y}" text-anchor="middle" dominant-baseline="middle" font-size="12"></text>')
+                svg_parts.append(f'<text x="{center_x}" y="{center_y}" text-anchor="middle" dominant-baseline="middle" font-size="12">🟫</text>')
             else:
-                # Draw Plant Emoji
                 emoji = "🌱"
-                if count >= 64:
-                    emoji = "🌳" # Tree
-                elif is_prime(count):
-                    emoji = "🌸" # Flower (Prime)
-                
+                if count >= 64: emoji = ""
+                elif is_prime(count): emoji = "🌸"
                 svg_parts.append(f'<text x="{center_x}" y="{center_y}" text-anchor="middle" dominant-baseline="middle" font-size="12">{emoji}</text>')
 
-    # 3. Patrolling Vector Mambo (Foreground Layer)
-    # Mambo walks at y=25 (just below title, above grid)
-    mambo_y = 25
-    svg_parts.append(MAMBO_SVG_TEMPLATE.format(y=mambo_y, start_x=-20, end_x=svg_width+20))
+    # Calculate Patrol Path
+    path_d = generate_path(weeks_data, cell_size, gap, header_height, row_height)
+    
+    if path_d:
+        # Sun patrols along the calculated path
+        svg_parts.append(f'''
+        <g transform="translate(0, -10)">
+            <text x="0" y="0" font-size="16">🌞</text>
+            <animateMotion path="{path_d}" dur="60s" repeatCount="indefinite" />
+            <animateTransform attributeName="transform" type="translate" values="0,0; 0,-4; 0,0" dur="1s" repeatCount="indefinite" additive="sum" />
+        </g>
+        ''')
 
-    # 4. Footer
     svg_parts.append(f'<text x="{svg_width/2}" y="{svg_height-2}" text-anchor="middle" fill="#6e7681" font-size="9" font-family="sans-serif">Generated by garden_gen.py</text>')
-
     svg_parts.append('</svg>')
     return "\n".join(svg_parts)
 
 def main():
     username = "CA-mambo" 
-    if len(sys.argv) > 1:
-        username = sys.argv[1]
+    if len(sys.argv) > 1: username = sys.argv[1]
         
     print(f"Initializing Garden Generator for {username}...")
     token = get_token()
