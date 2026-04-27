@@ -131,18 +131,10 @@ def generate_path(weeks_data, cell_size, gap, header_height, row_height):
     current = path_points[0]
     while remaining:
         # Find nearest neighbor
-        next_point = None
-        min_dist = float('inf')
-        for p in remaining:
-            d = get_distance(current, p)
-            if d < min_dist:
-                min_dist = d
-                next_point = p
-        
-        if next_point:
-            path_points.append(next_point)
-            remaining.remove(next_point)
-            current = next_point
+        next_point = min(remaining, key=lambda p: get_distance(current, p))
+        path_points.append(next_point)
+        remaining.remove(next_point)
+        current = next_point
     
     # 3. Build SVG path string
     path_d = f"M {path_points[0][0]},{path_points[0][1]}"
@@ -184,7 +176,7 @@ def generate_svg(weeks_data, username, is_mock=False):
                 svg_parts.append(f'<text x="{center_x}" y="{center_y}" text-anchor="middle" dominant-baseline="middle" font-size="12">🟫</text>')
             else:
                 emoji = "🌱"
-                if count >= 64: emoji = ""
+                if count >= 64: emoji = "🌳"
                 elif is_prime(count): emoji = "🌸"
                 svg_parts.append(f'<text x="{center_x}" y="{center_y}" text-anchor="middle" dominant-baseline="middle" font-size="12">{emoji}</text>')
 
@@ -192,12 +184,11 @@ def generate_svg(weeks_data, username, is_mock=False):
     path_d = generate_path(weeks_data, cell_size, gap, header_height, row_height)
     
     if path_d:
-        # Sun patrols along the calculated path
+        # Sun Patrolling (🌞)
         svg_parts.append(f'''
-        <g transform="translate(0, -10)">
-            <text x="0" y="0" font-size="16">🌞</text>
+        <g>
+            <text x="0" y="0" font-size="18">🌞</text>
             <animateMotion path="{path_d}" dur="60s" repeatCount="indefinite" />
-            <animateTransform attributeName="transform" type="translate" values="0,0; 0,-4; 0,0" dur="1s" repeatCount="indefinite" additive="sum" />
         </g>
         ''')
 
