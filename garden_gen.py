@@ -5,6 +5,18 @@ import urllib.request
 import random
 import datetime
 
+def is_prime(n):
+    """Check if a number is prime."""
+    if n <= 1: return False
+    if n <= 3: return True
+    if n % 2 == 0 or n % 3 == 0: return False
+    i = 5
+    while i * i <= n:
+        if n % i == 0 or n % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
 def get_token():
     """Try to get token from ENV first, then Keyring."""
     token = os.environ.get("GH_TOKEN")
@@ -126,17 +138,16 @@ def generate_svg(weeks_data, username, is_mock=False):
             fill_color = "#21262d" # Mud (Empty)
             icon = ""
             
-            if count > 0:
-                # Agent Efficiency Logic: High commit counts need higher thresholds
-                if count < 32:
-                    fill_color = "#238636" # Sprout (1-31 commits)
-                    icon = "🌱"
-                elif count < 128:
-                    fill_color = "#006d77" # Flowers (32-127 commits) - Extended to cover gap
+            if count >= 64:
+                fill_color = "#05461f" # Tree (High efficiency)
+                icon = "🌳"
+            elif count > 0:
+                if is_prime(count):
+                    fill_color = "#006d77" # Flower (Prime magic)
                     icon = "🌸"
                 else:
-                    fill_color = "#05461f" # Trees (>= 128 commits)
-                    icon = "🌳"
+                    fill_color = "#238636" # Sprout (Normal growth)
+                    icon = "🌱"
             
             # Draw Cell
             svg_parts.append(f'<rect x="{x}" y="{y}" width="{cell_size}" height="{cell_size}" fill="{fill_color}" rx="2" />')
@@ -161,6 +172,23 @@ def generate_svg(weeks_data, username, is_mock=False):
         svg_parts.append(f'<g>')
         # The Cloud
         svg_parts.append(f'  <text x="0" y="0" font-size="12" text-anchor="middle">☁️</text>')
+        
+        # The Rain (Animated)
+        svg_parts.append(f'  <g transform="translate(-5, 12)">')
+        # Rain drop 1
+        svg_parts.append(f'    <path d="M 0 0 L 0 6" stroke="#4facfe" stroke-width="1.5" stroke-linecap="round">')
+        svg_parts.append(f'      <animate attributeName="stroke-opacity" values="0;1;0" dur="0.8s" repeatCount="indefinite" />')
+        svg_parts.append(f'    </path>')
+        # Rain drop 2
+        svg_parts.append(f'    <path d="M 4 0 L 4 6" stroke="#4facfe" stroke-width="1.5" stroke-linecap="round">')
+        svg_parts.append(f'      <animate attributeName="stroke-opacity" values="1;0;1" dur="1s" repeatCount="indefinite" />')
+        svg_parts.append(f'    </path>')
+        # Rain drop 3
+        svg_parts.append(f'    <path d="M 8 0 L 8 6" stroke="#4facfe" stroke-width="1.5" stroke-linecap="round">')
+        svg_parts.append(f'      <animate attributeName="stroke-opacity" values="0.5;1;0.5" dur="0.6s" repeatCount="indefinite" />')
+        svg_parts.append(f'    </path>')
+        svg_parts.append(f'  </g>')
+        
         # The Path animation
         svg_parts.append(f'  <animateMotion dur="45s" repeatCount="indefinite" path="{path_d}" />')
         svg_parts.append(f'</g>')

@@ -6,11 +6,11 @@
 
 This visualization maps my GitHub contributions to a digital garden:
 - 🟫 **Mud**: 0 commits.
-- 🌱 **Sprout**: 1 - 31 commits.
-- 🌸 **Flower**: 32 - 127 commits.
-- 🌳 **Tree**: 128+ commits.
+- 🌱 **Sprout**: 1 - 63 commits (Composite numbers).
+- 🌸 **Flower**: 2, 3, 5, 7, 11... (Prime numbers < 64).
+- 🌳 **Tree**: 64+ commits (Agent High Efficiency).
 
-**Animation**: ☁️ Cloud patrols and waters your active contributions.
+**Animation**: ☁️ Rain cloud patrols and waters your active contributions.
 
 ---
 
