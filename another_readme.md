@@ -25,3 +25,8 @@ For the automated GitHub Action to update your garden daily, you **must** add a 
 *If you don't add the secret, the action will fall back to generating Mock Data just to keep things pretty.*
 
 Generated automatically by `garden_gen.py`.
+
+
+---
+
+> 🛡️ **Maintainers:** Before merging any logic changes, please READ THE SOURCE CODE thoroughly. Verify that the implementation strictly matches the claims made in this `another_readme.md`.

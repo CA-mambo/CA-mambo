@@ -19,7 +19,7 @@ def is_prime(n):
 
 def get_token():
     """Try to get token from ENV first, then Keyring."""
-    token = os.environ.get("GH_TOKEN")
+    token = os.environ.get("GH_Token")
     if not token:
         try:
             import keyring
@@ -119,10 +119,7 @@ def generate_svg(weeks_data, username, is_mock=False):
     title_text = "🌱 Mambo's Garden" if not is_mock else "🌱 Mambo's Garden (Demo)"
     svg_parts.append(f'<text x="{svg_width/2}" y="15" text-anchor="middle" fill="#58a6ff" font-size="14" font-family="sans-serif" font-weight="bold">{title_text}</text>')
 
-    # 2. Draw Grid
-    # We also collect coordinates for the animation path
-    path_points = []
-
+    # 2. Draw Grid (V0.0.1 Logic with Mud Emoji for 0 commits)
     for week_index, week in enumerate(weeks_data):
         x = week_index * (cell_size + gap) + gap
         days = week['contributionDays']
@@ -136,73 +133,42 @@ def generate_svg(weeks_data, username, is_mock=False):
             y = day_index * row_height + gap + header_height
             
             # Logic:
-            # If 0 commits -> Draw Brown Mud
-            # If > 0 commits -> Draw Icon (NO background color rect)
+            # If 0 commits -> Draw Mud Emoji 🟫
+            # If > 0 commits -> Draw Gradient Color Blocks (V0.0.1 style)
             
             fill_color = None
             icon = ""
             
             if count == 0:
-                fill_color = "#D1A880" # Mud (Warm Brown)
+                # V1.0.0 Mud Emoji
+                icon = "🟫"
             else:
                 if count >= 64:
-                    icon = "🌳" # Tree (High efficiency)
+                    fill_color = "#40B862" # Very Light Green
+                elif count >= 12:
+                    fill_color = "#288444" # Light Green
+                elif count >= 8:
+                    fill_color = "#1E6638" # Medium Green
                 elif is_prime(count):
-                    icon = "🌸" # Flower (Prime magic)
+                    fill_color = "#19654F" # Prime Magic Teal
                 else:
-                    icon = "🌱" # Sprout (Normal growth)
-                
-                # Add center point to animation path
-                cx = x + cell_size / 2
-                cy = y + cell_size / 2
-                path_points.append(f"{cx},{cy}")
+                    fill_color = "#0E4429" # Dark Green
             
-            # Draw Cell (Only if color is set)
+            # Draw Cell Color Block
             if fill_color:
                 svg_parts.append(f'<rect x="{x}" y="{y}" width="{cell_size}" height="{cell_size}" fill="{fill_color}" rx="2" />')
             
-            # Draw Icon
+            # Draw Icon / Emoji
             if icon:
+                # For emoji, we slightly adjust positioning to fit the cell
                 center_y = y + cell_size / 2 + 1 
                 center_x = x + cell_size / 2
-                svg_parts.append(f'<text x="{center_x}" y="{center_y}" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="sans-serif">{icon}</text>')
+                font_size = "12" if icon == "🟫" else "0" # hide text if using block
+                
+                if icon == "🟫":
+                    svg_parts.append(f'<text x="{center_x}" y="{center_y}" text-anchor="middle" dominant-baseline="middle" font-size="12">{icon}</text>')
 
-    # 3. Animation: The "Watering Cloud" ☁️
-    if path_points:
-        # Construct path string for animateMotion: M x1,y1 L x2,y2 ...
-        # To prevent jumping across large gaps (like weekends), we can insert move commands if distance is too large
-        # But for simplicity, let's just connect them.
-        
-        # A better path logic:
-        path_d = "M " + path_points[0]
-        for pt in path_points[1:]:
-            path_d += f" L {pt}"
-            
-        svg_parts.append(f'<g>')
-        # The Cloud
-        svg_parts.append(f'  <text x="0" y="0" font-size="12" text-anchor="middle">☁️</text>')
-        
-        # The Rain (Animated)
-        svg_parts.append(f'  <g transform="translate(-5, 12)">')
-        # Rain drop 1
-        svg_parts.append(f'    <path d="M 0 0 L 0 6" stroke="#4facfe" stroke-width="1.5" stroke-linecap="round">')
-        svg_parts.append(f'      <animate attributeName="stroke-opacity" values="0;1;0" dur="0.8s" repeatCount="indefinite" />')
-        svg_parts.append(f'    </path>')
-        # Rain drop 2
-        svg_parts.append(f'    <path d="M 4 0 L 4 6" stroke="#4facfe" stroke-width="1.5" stroke-linecap="round">')
-        svg_parts.append(f'      <animate attributeName="stroke-opacity" values="1;0;1" dur="1s" repeatCount="indefinite" />')
-        svg_parts.append(f'    </path>')
-        # Rain drop 3
-        svg_parts.append(f'    <path d="M 8 0 L 8 6" stroke="#4facfe" stroke-width="1.5" stroke-linecap="round">')
-        svg_parts.append(f'      <animate attributeName="stroke-opacity" values="0.5;1;0.5" dur="0.6s" repeatCount="indefinite" />')
-        svg_parts.append(f'    </path>')
-        svg_parts.append(f'  </g>')
-        
-        # The Path animation
-        svg_parts.append(f'  <animateMotion dur="45s" repeatCount="indefinite" path="{path_d}" />')
-        svg_parts.append(f'</g>')
-
-    # 4. Footer
+    # 3. Footer
     svg_parts.append(f'<text x="{svg_width/2}" y="{svg_height-2}" text-anchor="middle" fill="#6e7681" font-size="9" font-family="sans-serif">Generated by garden_gen.py</text>')
 
     svg_parts.append('</svg>')
