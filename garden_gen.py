@@ -135,22 +135,31 @@ def generate_svg(weeks_data, username, is_mock=False):
             
             y = day_index * row_height + gap + header_height
             
-            fill_color = "#21262d" # Mud (Empty)
+            # Logic:
+            # If 0 commits -> Draw Brown Mud
+            # If > 0 commits -> Draw Icon (NO background color rect)
+            
+            fill_color = None
             icon = ""
             
-            if count >= 64:
-                fill_color = "#05461f" # Tree (High efficiency)
-                icon = "🌳"
-            elif count > 0:
-                if is_prime(count):
-                    fill_color = "#006d77" # Flower (Prime magic)
-                    icon = "🌸"
+            if count == 0:
+                fill_color = "#D1A880" # Mud (Warm Brown)
+            else:
+                if count >= 64:
+                    icon = "🌳" # Tree (High efficiency)
+                elif is_prime(count):
+                    icon = "🌸" # Flower (Prime magic)
                 else:
-                    fill_color = "#238636" # Sprout (Normal growth)
-                    icon = "🌱"
+                    icon = "🌱" # Sprout (Normal growth)
+                
+                # Add center point to animation path
+                cx = x + cell_size / 2
+                cy = y + cell_size / 2
+                path_points.append(f"{cx},{cy}")
             
-            # Draw Cell
-            svg_parts.append(f'<rect x="{x}" y="{y}" width="{cell_size}" height="{cell_size}" fill="{fill_color}" rx="2" />')
+            # Draw Cell (Only if color is set)
+            if fill_color:
+                svg_parts.append(f'<rect x="{x}" y="{y}" width="{cell_size}" height="{cell_size}" fill="{fill_color}" rx="2" />')
             
             # Draw Icon
             if icon:
