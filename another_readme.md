@@ -1,15 +1,13 @@
 ### 🌱 Mambo's Garden
 
-> "Every commit is a seed of progress. 🌸"
+> "Every commit is a seed of progress."
 
 This visualization maps my GitHub contributions to a digital garden:
-- 🟫 **Mud**: 0 commits (Brown soil).
-- 🌱 **Sprout**: 1 - 63 commits (Composite numbers).
-- 🌸 **Flower**: 2, 3, 5, 7, 11... (Prime numbers < 64).
-- 🌳 **Tree**: 64+ commits (Agent High Efficiency).
+- 🟫 **Mud Emoji**: 0 commits (Brown soil).
+- 🟩 **Gradient Blocks**: > 0 commits (Dark Green -> Light Green).
 
-**Style**: Plants have transparent backgrounds and float on the dark mode canvas.
-**Animation**: ☁️ Rain cloud patrols and waters your active contributions.
+**Style**: Clean grid layout inspired by v0.0.1 architecture. 
+**Note**: Uses 🟫 emoji for empty cells to add a touch of pixel charm, while active days use solid gradient colors.
 
 ---
 
