@@ -1,0 +1,3 @@
+# 🌱 Mambo's Garden
+
+Generating dynamic visualizations...
