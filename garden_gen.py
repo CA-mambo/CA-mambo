@@ -6,7 +6,6 @@ import random
 import datetime
 
 # 🏃♀️ Mambo Pixel Sprite (Base64 PNG)
-# Generated from user image, resized to 16x16 (slightly larger for character), transparent background
 MAMBO_B64 = """iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAYAAABy6+R8AAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAACDElEQVR4nGOsZ2Bg+mQRyv7u3a0pz/592qHu3MgpyMmv9uHvv203d1T6c3PxHVp/8dTW0NBQ5tWrV/9laWRg+FdxfRcHt5RegrpxbJKEgCIDBxsfw4trSzNlBPj4fzByHWNAAiwg4o1PvY6QkPxRMRH5a+/ffvC78/T4TJn/51J+i/II3fvFdP4/AwNjg5bWf7gGJkY2Qy4OcaaHz89cFmS499xc6IXNLwZmsb+crAz/vn+3ZGRgeFR/4AAzAwPDP0YGBgYQ/p8XEtL958tbOzkJCTMZKUGGt7/+/f1w5ToTgwDrk59/2S3bVm99CvIvE0hxpINVMP/fd/kyUoJ6Jk4y77yiA/9KqTA/+8PD/oXpH5PQ0/cfk+3t7SGuARFfPvxk+/H9z2+2//9Y5WWNhf4zszEr8KvJ/vz2i/fXn39s37/+fSMmJva/kYHhP8g5DM3ixg7fOZlTbor/UGZhl/qr7Rp99czaSQZ87P8kWXjZMxbsObYN5nSwDb942Nj/cjAzvv/B8P/rp386p3avDOfk4vn1T0q9E6QYFAcgxeBQ+v//PyNjWNieeim+n7r/ZRdc/K38k5X5Hzvb37cKVqps9npqv5d859D6DLMB7CQIYGRYtmyXx5MzW3r+M7F8EBGTuCHnkNPqYsZ5n+H/fwZGRkawDcgArFlFUalbXVm1SkZSMhrEh4UODAAAxqfH5tXGEhUAAAAASUVORK5CYII="""
 
 def is_prime(n):
@@ -121,7 +120,7 @@ def generate_svg(weeks_data, username, is_mock=False):
     title_text = "🌱 Mambo's Garden" if not is_mock else "🌱 Mambo's Garden (Demo)"
     svg_parts.append(f'<text x="{svg_width/2}" y="15" text-anchor="middle" fill="#58a6ff" font-size="14" font-family="sans-serif" font-weight="bold">{title_text}</text>')
 
-    # 2. Draw Grid
+    # 2. Draw Grid (Plants & Mud)
     for week_index, week in enumerate(weeks_data):
         x = week_index * (cell_size + gap) + gap
         days = week['contributionDays']
@@ -133,21 +132,26 @@ def generate_svg(weeks_data, username, is_mock=False):
                 count = 0 
             
             y = day_index * row_height + gap + header_height
+            center_x = x + cell_size / 2
+            center_y = y + cell_size / 2 + 1
             
             if count == 0:
                 # Draw Mud Emoji
-                center_x = x + cell_size / 2
-                center_y = y + cell_size / 2 + 1
-                svg_parts.append(f'<text x="{center_x}" y="{center_y}" text-anchor="middle" dominant-baseline="middle" font-size="12">🟫</text>')
+                svg_parts.append(f'<text x="{center_x}" y="{center_y}" text-anchor="middle" dominant-baseline="middle" font-size="12"></text>')
             else:
-                # Draw faint green background for active days (Grass)
-                svg_parts.append(f'<rect x="{x}" y="{y}" width="{cell_size}" height="{cell_size}" fill="#0E4429" rx="2" opacity="0.5" />')
+                # Draw Plant Emoji (Restored)
+                emoji = "🌱"
+                if count >= 64:
+                    emoji = "🌳" # Tree
+                elif is_prime(count):
+                    emoji = "🌸" # Flower (Prime)
+                
+                svg_parts.append(f'<text x="{center_x}" y="{center_y}" text-anchor="middle" dominant-baseline="middle" font-size="12">{emoji}</text>')
 
-    # 3. Patrolling Mambo (Independent Layer)
-    # Mambo moves from left (-20) to right (svg_width + 20)
-    # He is placed slightly above the grid or in front
+    # 3. Patrolling Mambo (Foreground Layer)
+    # Mambo moves from left to right
     mambo_y = svg_height - 35 # Position near footer
-    mambo_size = 18 # Slightly larger than cell
+    mambo_size = 18 
     
     svg_parts.append(f'''
     <g>
