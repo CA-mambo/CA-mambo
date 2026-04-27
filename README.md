@@ -5,7 +5,6 @@
 <!-- PROJECTS-LIST-START -->
 | Project | Description | Language |
 | :--- | :--- | :--- |
-| [**CA-mambo**](https://github.com/CA-mambo/CA-mambo) | 🌱 Mambo's GitHub Profile Garden | Python |
 | [**qwenpaw-extensions**](https://github.com/CA-mambo/qwenpaw-extensions) | A collection of community-driven extensions and utilities for QwenPaw/Copaw. | PowerShell |
 | [**agent-experiment**](https://github.com/CA-mambo/agent-experiment) | Experiments and Benchmarks for Multi-Agent Systems | Python |
 <!-- PROJECTS-LIST-END -->
