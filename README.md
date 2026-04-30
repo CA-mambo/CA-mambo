@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="mambo.png" width="226" alt="Pixel Mambo">
+  <img src="mambo_16x16pixel.png" width="64" alt="Pixel Mambo">
 </p>
 
 ![Garden](garden.svg)
