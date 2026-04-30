@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="mambo_16x16pixel.png" width="128" alt="Pixel Mambo">
-</p>
-
 ![Garden](garden.svg)
 
 ## 🌟 Public Projects
