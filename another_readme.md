@@ -3,8 +3,8 @@
 > "Every commit is a seed of progress."
 
 This visualization maps my GitHub contributions to a digital garden:
-- 🟫 **Mud Emoji**: 0 commits (Brown soil).
-- 🌸 **Sprout**: 1 - 63 commits (Composite numbers).
+- 🟫or🌵 **Mud Emoji**: 0 commits (80% 🟫, 20% 🌵).
+- 🌱 **Sprout**: 1 - 63 commits (Composite numbers).
 - 🌸 **Flower**: Prime numbers < 64.
 - 🌳 **Tree**: 64+ commits.
 
