@@ -101,95 +101,15 @@ def generate_mock_data():
 def get_distance(p1, p2):
     return math.sqrt((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2)
 
-def get_image_base64(image_url):
-    """Download image and convert to base64 data URI."""
+def get_gif_base64(gif_path):
+    """Read existing GIF file and convert to base64 data URI."""
     try:
-        req = urllib.request.Request(image_url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(req) as response:
-            image_data = response.read()
-            b64 = base64.b64encode(image_data).decode('utf-8')
-            return f"data:image/png;base64,{b64}"
-    except Exception as e:
-        print(f"Warning: Could not fetch image for embedding. {e}")
-        return None
-
-def process_mambo_pixel_art(image_path, target_size=20, animate=False):
-    """
-    Process 1024x1024 pixel art (scaled from 16x16) by:
-    1. Downsampling to 16x16 to extract original pixels
-    2. Removing white background
-    3. Scaling up to target_size x target_size
-    If animate=True, returns a two-frame animated GIF.
-    Returns base64 data URI.
-    """
-    try:
-        from PIL import Image
-        from io import BytesIO
-
-        img = Image.open(image_path).convert('RGBA')
-
-        # Step 1: Downsample to 16x16 using NEAREST to get original pixels
-        img_16 = img.resize((16, 16), Image.NEAREST)
-
-        # Step 2: Remove white background
-        pixels = img_16.load()
-        for y in range(16):
-            for x in range(16):
-                r, g, b, a = pixels[x, y]
-                if r > 240 and g > 240 and b > 240:
-                    pixels[x, y] = (0, 0, 0, 0)
-
-        if not animate:
-            img_scaled = img_16.resize((target_size, target_size), Image.NEAREST)
-            buffered = BytesIO()
-            img_scaled.save(buffered, format='PNG')
-            b64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
-            return f"data:image/png;base64,{b64}"
-        else:
-            # Create two-frame walking animation
-            frame0 = img_16.copy()
-            frame1 = img_16.copy()
-            f1_pixels = frame1.load()
-
-            # Find leg/feet pixels (bottom area)
-            leg_pixels_left = []
-            leg_pixels_right = []
-            for y in range(12, 16):
-                for x in range(16):
-                    if pixels[x, y] != (0, 0, 0, 0):
-                        if x <= 7:
-                            leg_pixels_left.append((x, y))
-                        else:
-                            leg_pixels_right.append((x, y))
-
-            # Frame 1: Animate legs
-            for x, y in leg_pixels_left:
-                new_y = max(0, y - 1)
-                f1_pixels[x, new_y] = pixels[x, y]
-                f1_pixels[x, y] = (0, 0, 0, 0)
-            for x, y in leg_pixels_right:
-                new_y = min(15, y + 1)
-                f1_pixels[x, new_y] = pixels[x, y]
-                f1_pixels[x, y] = (0, 0, 0, 0)
-
-            frame0_scaled = frame0.resize((target_size, target_size), Image.NEAREST)
-            frame1_scaled = frame1.resize((target_size, target_size), Image.NEAREST)
-
-            buffered = BytesIO()
-            frame0_scaled.save(
-                buffered,
-                format='GIF',
-                save_all=True,
-                append_images=[frame1_scaled],
-                duration=400,
-                loop=0,
-                transparency=0
-            )
-
-            b64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
+        with open(gif_path, 'rb') as f:
+            gif_data = f.read()
+            b64 = base64.b64encode(gif_data).decode('utf-8')
             return f"data:image/gif;base64,{b64}"
     except Exception as e:
-        print(f"Warning: Could not process mambo pixel art. {e}")
+        print(f"Warning: Could not load GIF file. {e}")
         return None
 
 def generate_svg(weeks_data, username, is_mock=False):
@@ -208,8 +128,8 @@ def generate_svg(weeks_data, username, is_mock=False):
 
     # Header: Image + Text (centered together as a group)
     img_size = 20
-    mambo_local_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mambo.webp")
-    image_b64 = process_mambo_pixel_art(mambo_local_path, target_size=img_size, animate=True)
+    mambo_gif_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mambo_animated.gif")
+    image_b64 = get_gif_base64(mambo_gif_path)
 
     title_text = "mambo's garden 🌸" if not is_mock else "mambo's garden  (Demo)"
     # Estimate text width for centering (~10px per char at 20px font)
@@ -281,10 +201,8 @@ def generate_svg(weeks_data, username, is_mock=False):
         # Seamless loop: start == end
         full_patrol_d = forward_d + return_d
 
-        mambo_patrol_b64 = process_mambo_pixel_art(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), "mambo.webp"),
-            target_size=18,
-            animate=True
+        mambo_patrol_b64 = get_gif_base64(
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "mambo_animated.gif")
         )
 
         if mambo_patrol_b64:
