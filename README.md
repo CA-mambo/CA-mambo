@@ -3,7 +3,9 @@
 ## 🌟 Public Projects
 
 <!-- PROJECTS-LIST-START -->
-*(No public projects found)*
+| Project | Description | Language |
+| :--- | :--- | :--- |
+| [**LitePaw**](https://github.com/CA-mambo/LitePaw) | A lightweight, memory-enhanced AI Agent framework using ReMeLight. | Python |
 <!-- PROJECTS-LIST-END -->
 
 > 🌱 _This Garden grows with every commit. Check the `garden.svg` for a visual representation of my contribution heatmap!_
